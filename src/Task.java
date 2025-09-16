@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 class Task {
     private int id;
     private String title;
@@ -12,12 +14,24 @@ class Task {
         this.priority = priority;
         this.deadline = deadline;
     }
-    public Task(){
 
-    }
+    public Task() {}
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Task)) return false;
+        Task task = (Task) o;
+        return id == task.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override
