@@ -1,10 +1,8 @@
-import java.util.Objects;
-
 class Task {
     private int id;
     private String title;
     private String description;
-    private int priority;  // Higher = more urgent
+    private int priority;
     private String deadline;
 
     public Task(int id, String title, String description, int priority, String deadline) {
@@ -15,32 +13,35 @@ class Task {
         this.deadline = deadline;
     }
 
-    public Task() {}
+    // Getters & Setters
+    public int getId() { return id; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public int getPriority() { return priority; }
+    public String getDeadline() { return deadline; }
 
-    public int getId() {
-        return id;
-    }
+    public void setTitle(String title) { this.title = title; }
+    public void setDescription(String description) { this.description = description; }
+    public void setPriority(int priority) { this.priority = priority; }
+    public void setDeadline(String deadline) { this.deadline = deadline; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Task)) return false;
         Task task = (Task) o;
-        return id == task.id;
+        return this.id == task.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Integer.hashCode(id);
     }
+
 
     @Override
     public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", priority=" + priority +
-                ", deadline='" + deadline + '\'' +
-                '}';
+        return "[ID=" + id + ", Title=" + title + ", Desc=" + description +
+                ", Priority=" + priority + ", Deadline=" + deadline + "]";
     }
 }
