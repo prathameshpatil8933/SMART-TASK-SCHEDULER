@@ -12,6 +12,13 @@ class Task {
         this.priority = priority;
         this.deadline = deadline;
     }
+    public Task(){
+
+    }
+
+    public int getId() {
+        return id;
+    }
 
     @Override
     public String toString() {
