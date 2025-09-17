@@ -41,7 +41,7 @@ public class Main {
 
                             if (!duplicate) break; // valid ID
                         } else {
-                            System.out.println("⚠ Invalid input! Please enter a number.");
+                            System.out.println(" Invalid input! Please enter a number.");
                             sc.nextLine();
                         }
                     }
@@ -80,12 +80,12 @@ public class Main {
                             LocalDate parsedDate = LocalDate.parse(deadline);
                             LocalDate today = LocalDate.now();
                             if (parsedDate.isBefore(today)) {
-                                System.out.println("⚠ Deadline cannot be in the past!");
+                                System.out.println(" Deadline cannot be in the past!");
                             } else {
                                 break; // valid deadline
                             }
                         } catch (DateTimeParseException e) {
-                            System.out.println("⚠ Invalid date format! Please use yyyy-mm-dd.");
+                            System.out.println(" Invalid date format! Please use yyyy-mm-dd.");
                         }
                     }
 
