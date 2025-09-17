@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class Main {
@@ -8,14 +10,14 @@ public class Main {
         TaskManager tm = new TaskManager();
 
         while (true) {
-            System.out.println("\n==== Task Manager ====");
+            System.out.println("==== Task Manager ====");
             System.out.println("1. Create Task");
             System.out.println("2. Delete Task");
             System.out.println("3. Update Task");
             System.out.println("4. Read Task (by ID)");
             System.out.println("5. Show All Tasks");
             System.out.println("6. Exit");
-            System.out.print("👉 Enter your choice: ");
+            System.out.print(" Enter your choice: ");
             int choice = sc.nextInt();
             sc.nextLine(); // consume newline
 
@@ -26,7 +28,7 @@ public class Main {
                         System.out.print("Enter Task ID: ");
                         if (sc.hasNextInt()) {
                             id = sc.nextInt();
-                            sc.nextLine(); // consume newline
+                            sc.nextLine();
 
                             boolean duplicate = false;
                             for (Task t : tasks) {
@@ -37,16 +39,12 @@ public class Main {
                                 }
                             }
 
-                            if (!duplicate) {
-                                break; // 
-                            }
+                            if (!duplicate) break; // valid ID
                         } else {
-                            System.out.println("Invalid input! Please enter a number.");
+                            System.out.println("⚠ Invalid input! Please enter a number.");
                             sc.nextLine();
                         }
                     }
-
-
 
                     System.out.print("Enter Title: ");
                     String title = sc.nextLine();
@@ -60,23 +58,39 @@ public class Main {
                         if (sc.hasNextInt()) {
                             priority = sc.nextInt();
                             sc.nextLine(); // consume newline
-
-                            if (priority >= 1 && priority <= 5) {
-                                break; // ✅ valid input
-                            } else {
-                                System.out.println("❌ Please enter priority between 1 and 5.");
-                            }
+                            if (priority >= 1 && priority <= 5) break;
+                            else System.out.println(" Please enter priority between 1 and 5.");
                         } else {
-                            System.out.println("❌ Invalid input! Please enter a number.");
-                            sc.nextLine(); // clear invalid input
+                            System.out.println(" Invalid input! Please enter a number.");
+                            sc.nextLine();
                         }
                     }
 
+                    String deadline;
+                    while (true) {
+                        System.out.print("Enter Deadline (yyyy-mm-dd): ");
+                        deadline = sc.nextLine();
 
-                    System.out.print("Enter Deadline (yyyy-mm-dd): ");
-                    String deadline = sc.nextLine();
+                        if (deadline == null || deadline.trim().isEmpty()) {
+                            System.out.println("⚠ Deadline cannot be blank!");
+                            continue;
+                        }
+
+                        try {
+                            LocalDate parsedDate = LocalDate.parse(deadline);
+                            LocalDate today = LocalDate.now();
+                            if (parsedDate.isBefore(today)) {
+                                System.out.println("⚠ Deadline cannot be in the past!");
+                            } else {
+                                break; // valid deadline
+                            }
+                        } catch (DateTimeParseException e) {
+                            System.out.println("⚠ Invalid date format! Please use yyyy-mm-dd.");
+                        }
+                    }
 
                     tm.createTask(tasks, id, title, description, priority, deadline);
+                    System.out.println(" Task added successfully!");
                     break;
 
                 case 2: // DELETE
@@ -97,9 +111,19 @@ public class Main {
                     System.out.print("Enter New Description: ");
                     String newDesc = sc.nextLine();
 
-                    System.out.print("Enter New Priority (1-5): ");
-                    int newPriority = sc.nextInt();
-                    sc.nextLine();
+                    int newPriority;
+                    while (true) {
+                        System.out.print("Enter New Priority (1-5): ");
+                        if (sc.hasNextInt()) {
+                            newPriority = sc.nextInt();
+                            sc.nextLine();
+                            if (newPriority >= 1 && newPriority <= 5) break;
+                            else System.out.println(" Please enter priority between 1 and 5.");
+                        } else {
+                            System.out.println(" Invalid input! Please enter a number.");
+                            sc.nextLine();
+                        }
+                    }
 
                     System.out.print("Enter New Deadline (yyyy-mm-dd): ");
                     String newDeadline = sc.nextLine();
@@ -115,19 +139,19 @@ public class Main {
                     break;
 
                 case 5: // SHOW ALL
-                    System.out.println("\n📋 All Tasks:");
+                    System.out.println("\n All Tasks:");
                     for (Task t : tasks) {
                         System.out.println(t);
                     }
                     break;
 
                 case 6: // EXIT
-                    System.out.println("👋 Exiting Task Manager. Goodbye!");
+                    System.out.println(" Exiting Task Manager. Goodbye!");
                     sc.close();
                     return;
 
                 default:
-                    System.out.println("⚠️ Please enter a valid option (1-6).");
+                    System.out.println(" Please enter a valid option (1-6).");
             }
         }
     }
