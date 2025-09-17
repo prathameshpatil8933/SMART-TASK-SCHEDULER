@@ -3,7 +3,6 @@ import java.util.List;
 class TaskManager {
 
     public void deleteTask(List<Task> tasks, int id) {
-        // Dummy task with only id used for equals()
         Task dummy = new Task(id, "", "", 0, "");
 
         boolean removed = tasks.remove(dummy); // internally calls equals()

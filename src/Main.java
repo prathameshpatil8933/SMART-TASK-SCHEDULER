@@ -21,9 +21,32 @@ public class Main {
 
             switch (choice) {
                 case 1: // CREATE
-                    System.out.print("Enter Task ID: ");
-                    int id = sc.nextInt();
-                    sc.nextLine();
+                    int id;
+                    while (true) {
+                        System.out.print("Enter Task ID: ");
+                        if (sc.hasNextInt()) {
+                            id = sc.nextInt();
+                            sc.nextLine(); // consume newline
+
+                            boolean duplicate = false;
+                            for (Task t : tasks) {
+                                if (t.getId() == id) {
+                                    duplicate = true;
+                                    System.out.println(" Duplicate ID not allowed. Try again.");
+                                    break;
+                                }
+                            }
+
+                            if (!duplicate) {
+                                break; // 
+                            }
+                        } else {
+                            System.out.println("Invalid input! Please enter a number.");
+                            sc.nextLine();
+                        }
+                    }
+
+
 
                     System.out.print("Enter Title: ");
                     String title = sc.nextLine();
@@ -31,9 +54,24 @@ public class Main {
                     System.out.print("Enter Description: ");
                     String description = sc.nextLine();
 
-                    System.out.print("Enter Priority (1-5): ");
-                    int priority = sc.nextInt();
-                    sc.nextLine();
+                    int priority;
+                    while (true) {
+                        System.out.print("Enter Priority (1-5): ");
+                        if (sc.hasNextInt()) {
+                            priority = sc.nextInt();
+                            sc.nextLine(); // consume newline
+
+                            if (priority >= 1 && priority <= 5) {
+                                break; // ✅ valid input
+                            } else {
+                                System.out.println("❌ Please enter priority between 1 and 5.");
+                            }
+                        } else {
+                            System.out.println("❌ Invalid input! Please enter a number.");
+                            sc.nextLine(); // clear invalid input
+                        }
+                    }
+
 
                     System.out.print("Enter Deadline (yyyy-mm-dd): ");
                     String deadline = sc.nextLine();
