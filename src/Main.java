@@ -17,6 +17,8 @@ public class Main {
             System.out.println("4. Read Task (by ID)");
             System.out.println("5. Show All Tasks");
             System.out.println("6. Exit");
+            System.out.print("7. Enter title to search: ");
+
             System.out.print(" Enter your choice: ");
             int choice = sc.nextInt();
             sc.nextLine(); // consume newline
@@ -149,6 +151,19 @@ public class Main {
                     System.out.println(" Exiting Task Manager. Goodbye!");
                     sc.close();
                     return;
+                case 7:
+                    System.out.print("Enter title to search: ");
+                    String search = sc.nextLine();
+                    boolean found = false;
+                    for (Task t : tasks) {
+                        if (t.getTitle().equalsIgnoreCase(search)) {
+                            System.out.println(" Found: " + t);
+                            found = true;
+                        }
+                    }
+                    if (!found) System.out.println(" No task with that title.");
+                    break;
+
 
                 default:
                     System.out.println(" Please enter a valid option (1-6).");
