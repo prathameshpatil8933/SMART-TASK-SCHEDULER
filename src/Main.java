@@ -37,8 +37,6 @@ public class Main {
                     LocalDate deadline = readDate(sc, formatter, "Enter deadline (dd/MM/yyyy): ");
 
                     Task newTask = tm.createTask(tasks, id, title, desc, priority, deadline,sc);
-                    System.out.println("Task created: ");
-                    System.out.println(newTask);
                     System.out.println("Press only Enter to continue...");
                     String input = sc.nextLine();
                     while (!input.isEmpty()) {
@@ -50,7 +48,7 @@ public class Main {
 
                 case 2:
                     int delId = readInt(sc, "Enter ID to delete: ");
-                    String s=tm.deleteTask(tasks,delId);
+                    String s=tm.deleteTask(tasks,delId,sc);
                     System.out.println(s);
                     System.out.println("Press only Enter to continue...");
                     String input1 = sc.nextLine();
@@ -58,6 +56,10 @@ public class Main {
                         System.out.println("Press only Enter to continue...");
                         input1 = sc.nextLine();
                     }
+
+
+
+
 
                     break;
 
@@ -88,8 +90,7 @@ public class Main {
                         newDeadline = readDate(sc, formatter, "Enter new deadline (dd/MM/yyyy): ");
                     }
 
-                    String updated = tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, newDeadline);
-                    System.out.println(updated);
+                     tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, newDeadline,sc);
                     System.out.println("Press only Enter to continue...");
                     String input2 = sc.nextLine();
                     while (!input2.isEmpty()) {
