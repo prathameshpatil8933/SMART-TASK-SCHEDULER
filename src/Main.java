@@ -11,9 +11,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         TaskManager tm = new TaskManager();
         Map<Integer, Task> tasks = new HashMap<>();
-        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate deadline = null;
-        LocalDate newDeadlin=null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         boolean running = true;
         while (running) {
@@ -28,199 +26,54 @@ public class Main {
             System.out.print("Enter your choice: ");
 
             int choice = sc.nextInt();
-            sc.nextLine();
-            int id,priority=0;
-            String desc,title;
+            sc.nextLine(); // consume newline
+
             switch (choice) {
-                case 1:
-                    while (true) {
-                        System.out.print("Enter ID: ");
-                        if (sc.hasNextInt()) {
-                            id = sc.nextInt();
-                            sc.nextLine();
-                            break;
-                        } else {
-                            System.out.println("Please enter the ID in Integer format only ");
-                        }
-
-                    }
-                    System.out.println("ID entered: " + id);
-
-
-                    while (true) {
-                        System.out.print("Enter title: ");
-                        title = sc.nextLine();
-                        if (title.trim().isEmpty()) {
-                            System.out.println("Title cannot be empty!");
-                        }
-                        else if (!title.matches("[a-zA-Z ]+")) {  // letters (upper/lower) and spaces only
-                            System.out.println("Title can contain letters and spaces only!");
-                        }
-                        else
-                            break;
-                    }
-                    System.out.println("Title entered: " + title);
-
-
-                    while (true) {
-                        System.out.print("Enter description: ");
-                        desc = sc.nextLine();
-                        if (desc.trim().isEmpty()) {
-                            System.out.println("Title cannot be empty!");
-                        } else
-                            break;
-                    }
-                    System.out.println("Description entered: " + desc);
-
-                    while (true) {
-                        System.out.print("Enter priority (1–5): ");
-                        if (sc.hasNextInt()) {
-                            priority = sc.nextInt();
-                            sc.nextLine(); // consume newline
-                            if (priority >= 1 && priority <= 5) {
-                                break;
-                            } else {
-                                System.out.println("Priority must be between 1 and 5.");
-                            }
-                        } else {
-                            System.out.println("Priority should be an integer only.");
-                            sc.nextLine();
-                        }
-                    }
-                    System.out.println("Priority entered: " + priority);
-
-
-
-
-                    while (true) {
-                        System.out.print("Enter deadline (dd-MM-yyyy): ");
-                        String input = sc.nextLine();
-
-                        try{
-                            deadline=LocalDate.parse(input,formatter);
-                            break;
-                        }
-                        catch (DateTimeException e){
-                            System.out.println("Invalid date format! Please enter again in dd/MM/yyyy format.");
-                        }
-                    }
-                    System.out.println("Deadline entered: " + deadline);
-
-
-
+                case 1: // Create Task
+                    int id = readInt(sc, "Enter ID: ");
+                    String title = readTitle(sc, "Enter title: ");
+                    String desc = readDescription(sc, "Enter description: ");
+                    int priority = readPriority(sc, "Enter priority (1-5): ");
+                    LocalDate deadline = readDate(sc, formatter, "Enter deadline (dd/MM/yyyy): ");
 
                     Task newTask = tm.createTask(tasks, id, title, desc, priority, deadline);
                     System.out.println("Task created: " + newTask);
                     break;
 
-                case 2:
-                    int delId;
-                    while (true) {
-                        System.out.print("Enter ID to delete: ");
-                        if (sc.hasNextInt()) {
-                            delId = sc.nextInt();
-                            sc.nextLine();
-                            break;
-                        }
-                        else {
-                            System.out.println("The ID values should be an Integer only ");
-                        }
-                    }
+                case 2: // Delete Task
+                    int delId = readInt(sc, "Enter ID to delete: ");
                     System.out.println(tm.deleteTask(tasks, delId) ? "Deleted!" : "Not found!");
                     break;
 
-                case 3:
-                    int upId;
-                    while (true) {
-                        System.out.print("Enter ID to update: ");
-                        if (sc.hasNextInt()) {
-                            upId = sc.nextInt();
-                            sc.nextLine();
-                            break;
-                        } else {
-                            System.out.println("Please enter the ID in integer format only.");
-                            sc.nextLine();
-                        }
-                    }
+                case 3: // Update Task
+                    int upId = readInt(sc, "Enter ID to update: ");
+                    String newTitle = readTitle(sc, "Enter new title: ");
+                    String newDesc = readDescription(sc, "Enter new description: ");
+                    int newPriority = readPriority(sc, "Enter new priority (1-5): ");
+                    LocalDate newDeadline = readDate(sc, formatter, "Enter new deadline (dd/MM/yyyy): ");
 
-                    String newTitle;
-                    while (true) {
-                        System.out.print("Enter new title: ");
-                        newTitle = sc.nextLine();
-                        if (newTitle.trim().isEmpty()) {
-                            System.out.println("Title cannot be empty!");
-                        } else if (!newTitle.matches("[a-zA-Z ]+")) {
-                            System.out.println("Title can contain letters and spaces only!");
-                        } else {
-                            break;
-                        }
-                    }
-
-                    String newDesc;
-                    while (true) {
-                        System.out.print("Enter new description: ");
-                        newDesc = sc.nextLine();
-                        if (newDesc.trim().isEmpty()) {
-                            System.out.println("Description cannot be empty!");
-                        }else if (!newDesc.matches("[a-zA-Z ]+")) {
-                            System.out.println("Description can contain letters and spaces only!");
-                        } else {
-                            break;
-                        }
-                    }
-
-                    int newPriority;
-                    while (true) {
-                        System.out.print("Enter new priority (1–5): ");
-                        if (sc.hasNextInt()) {
-                            newPriority = sc.nextInt();
-
-                            if (newPriority >= 1 && newPriority <= 5) {
-                                break;
-                            } else {
-                                System.out.println("Priority must be between 1 and 5.");
-                            }
-                        } else {
-                            System.out.println("Priority should be an integer only.");
-                            sc.nextLine();
-                        }
-                    }
-                    String newDeadline;
-                    while(true) {
-                        System.out.print("Enter new deadline (dd-mm-yyyy): ");
-                        newDeadline= sc.nextLine();
-                        try{
-                            newDeadlin=LocalDate.parse(newDeadline,formatter);
-                            break;
-                        }
-                        catch (DateTimeParseException e) {
-                            System.out.println("Invalid date format! Please enter again in dd/MM/yyyy format.");
-                        }
-
-                    }
-                    System.out.println(tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, LocalDate.parse(newDeadline))
+                    System.out.println(tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, newDeadline)
                             ? "Updated!" : "Not found!");
                     break;
 
-                case 4:
-                    System.out.print("Enter ID to read: ");
-                    int readId = sc.nextInt();
+                case 4: // Read Task
+                    int readId = readInt(sc, "Enter ID to read: ");
                     tm.getTaskById(tasks, readId).ifPresentOrElse(
                             System.out::println,
                             () -> System.out.println("Task not found!")
                     );
                     break;
 
-                case 5:
+                case 5: // Show all
                     tm.showAll(tasks);
                     break;
 
-                case 6:
+                case 6: // Exit
                     running = false;
                     sc.close();
                     break;
 
-                case 7:
+                case 7: // Search
                     System.out.print("Enter title keyword: ");
                     String keyword = sc.nextLine();
                     tm.searchByTitle(tasks, keyword);
@@ -230,5 +83,87 @@ public class Main {
                     System.out.println("Invalid choice!");
             }
         }
+    }
+
+
+    private static int readInt(Scanner sc, String prompt) {
+        int value;
+        while (true) {
+            System.out.print(prompt);
+            if (sc.hasNextInt()) {
+                value = sc.nextInt();
+                sc.nextLine(); // consume newline
+                break;
+            } else {
+                System.out.println("Please enter a valid integer.");
+                sc.nextLine(); // discard invalid input
+            }
+        }
+        return value;
+    }
+
+    private static String readTitle(Scanner sc, String prompt) {
+        String title;
+        while (true) {
+            System.out.print(prompt);
+            title = sc.nextLine();
+            if (title.trim().isEmpty()) {
+                System.out.println("Title cannot be empty!");
+            } else if (!title.matches("[a-zA-Z ]+")) {
+                System.out.println("Title can contain letters and spaces only!");
+            } else {
+                break;
+            }
+        }
+        return title;
+    }
+
+    private static String readDescription(Scanner sc, String prompt) {
+        String desc;
+        while (true) {
+            System.out.print(prompt);
+            desc = sc.nextLine();
+            if (desc.trim().isEmpty()) {
+                System.out.println("Description cannot be empty!");
+            } else {
+                break;
+            }
+        }
+        return desc;
+    }
+
+    private static int readPriority(Scanner sc, String prompt) {
+        int priority;
+        while (true) {
+            System.out.print(prompt);
+            if (sc.hasNextInt()) {
+                priority = sc.nextInt();
+                sc.nextLine(); // consume newline
+                if (priority >= 1 && priority <= 5) {
+                    break;
+                } else {
+                    System.out.println("Priority must be between 1 and 5.");
+                }
+            } else {
+                System.out.println("Priority should be an integer only.");
+                sc.nextLine(); // discard invalid input
+            }
+        }
+        return priority;
+    }
+
+    private static LocalDate readDate(Scanner sc, DateTimeFormatter formatter, String prompt) {
+        LocalDate date;
+        while (true) {
+            System.out.print(prompt);
+            String input = sc.nextLine();
+            try {
+                date = LocalDate.parse(input, formatter);
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format! Please enter again in dd/MM/yyyy format.");
+            }
+        }
+        return date;
     }
 }
