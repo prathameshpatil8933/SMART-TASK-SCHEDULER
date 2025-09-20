@@ -1,11 +1,14 @@
-class Task {
+import java.time.LocalDate;
+import java.util.Objects;
+
+public class Task {
     private int id;
     private String title;
     private String description;
-    private int priority;
-    private String deadline;
+    private int priority; // 1–5
+    private LocalDate deadline;
 
-    public Task(int id, String title, String description, int priority, String deadline) {
+    public Task(int id, String title, String description, int priority, LocalDate deadline) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -13,35 +16,35 @@ class Task {
         this.deadline = deadline;
     }
 
-    // Getters & Setters
+    // Getters
     public int getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public int getPriority() { return priority; }
-    public String getDeadline() { return deadline; }
+    public LocalDate getDeadline() { return deadline; }
 
+    // Setters
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
     public void setPriority(int priority) { this.priority = priority; }
-    public void setDeadline(String deadline) { this.deadline = deadline; }
+    public void setDeadline(LocalDate deadline) { this.deadline = deadline; }
+
+    @Override
+    public String toString() {
+        return String.format("Task{id=%d, title='%s', desc='%s', priority=%d, deadline=%s}",
+                id, title, description, priority, deadline);
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Task)) return false;
         Task task = (Task) o;
-        return this.id == task.id;
+        return id == task.id;
     }
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(id);
-    }
-
-
-    @Override
-    public String toString() {
-        return "[ID=" + id + ", Title=" + title + ", Desc=" + description +
-                ", Priority=" + priority + ", Deadline=" + deadline + "]";
+        return Objects.hash(id);
     }
 }

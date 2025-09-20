@@ -1,139 +1,69 @@
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.Map;
+import java.util.Optional;
 
-class TaskManager {
-    Scanner sc=new Scanner(System.in);
+public class TaskManager {
 
-    public void createTask(List<Task> tasks) {
-        int id;
-        while (true) {
-            System.out.print("Enter Task ID: ");
-            if (sc.hasNextInt()) {
-                id = sc.nextInt();
-                sc.nextLine();
 
-                boolean duplicate = false;
-                for (Task t : tasks) {
-                    if (t.getId() == id) {
-                        duplicate = true;
-                        System.out.println(" Duplicate ID not allowed. Try again.");
-                        break;
-                    }
-                }
-
-                if (!duplicate) break; // valid ID
-            } else {
-                System.out.println(" Invalid input! Please enter a number.");
-                sc.nextLine();
-            }
+    public Task createTask(Map<Integer, Task> tasks, int id, String title, String description, int priority, LocalDate deadline) {
+        int choice=0;
+        if (tasks.containsKey(id)) {
+            System.out.println("Task ID already exists: " + id);
+            choice=1;
         }
-
-        System.out.print("Enter Title: ");
-        String title = sc.nextLine();
-
-        System.out.print("Enter Description: ");
-        String description = sc.nextLine();
-
-        int priority;
-        while (true) {
-            System.out.print("Enter Priority (1-5): ");
-            if (sc.hasNextInt()) {
-                priority = sc.nextInt();
-                sc.nextLine(); // consume newline
-                if (priority >= 1 && priority <= 5) break;
-                else System.out.println(" Please enter priority between 1 and 5.");
-            } else {
-                System.out.println(" Invalid input! Please enter a number.");
-                sc.nextLine();
-            }
+        if (priority < 1 || priority > 5) {
+            System.out.println("Priority must be between 1 and 5.");
+            choice=2;
         }
+        while(true) {
+            break;
 
-        String deadline;
-        while (true) {
-            System.out.print("Enter Deadline (yyyy-mm-dd): ");
-            deadline = sc.nextLine();
-
-            if (deadline == null || deadline.trim().isEmpty()) {
-                System.out.println("⚠ Deadline cannot be blank!");
-                continue;
-            }
-
-            try {
-                LocalDate parsedDate = LocalDate.parse(deadline);
-                LocalDate today = LocalDate.now();
-                if (parsedDate.isBefore(today)) {
-                    System.out.println(" Deadline cannot be in the past!");
-                } else {
-                    break; // valid deadline
-                }
-            } catch (DateTimeParseException e) {
-                System.out.println(" Invalid date format! Please use yyyy-mm-dd.");
-            }
         }
-        Task tk = new Task(id, title, description, priority, deadline);
-        tasks.add(tk);
-        System.out.println(" Task added successfully!");
+        Task task = new Task(id, title, description, priority, deadline);
+        tasks.put(id, task);
+        return task;
     }
 
-    public void deleteTask(List<Task> tasks, int id) {
-        Task dummy = new Task(id, "", "", 0, "");
-        boolean removed = tasks.remove(dummy); 
-        if (removed) {
-            System.out.println(" Task with ID " + id + " removed.");
+
+    public Optional<Task> getTaskById(Map<Integer, Task> tasks, int id) {
+        return Optional.ofNullable(tasks.get(id));
+    }
+
+
+    public boolean deleteTask(Map<Integer, Task> tasks, int id) {
+        return tasks.remove(id) != null;
+    }
+
+
+    public boolean updateTask(Map<Integer, Task> tasks, int id, String newTitle, String newDescription, int newPriority, LocalDate newDeadline) {
+        Task t = tasks.get(id);
+        if (t == null) return false;
+        t.setTitle(newTitle);
+        t.setDescription(newDescription);
+        t.setPriority(newPriority);
+        t.setDeadline(newDeadline);
+        return true;
+    }
+
+
+    public void showAll(Map<Integer, Task> tasks) {
+        if (tasks.isEmpty()) {
+            System.out.println("No tasks available.");
         } else {
-            System.out.println(" Task with ID " + id + " not found.");
+            tasks.values().forEach(System.out::println);
         }
     }
 
-    public void readTask(List<Task> tasks, int id) {
-        for (Task t : tasks) {
-            if (t.getId() == id) {
-                System.out.println(" Task found: " + t);
-                return;
+    public void searchByTitle(Map<Integer, Task> tasks, String keyword) {
+        boolean found = false;
+        for (Task t : tasks.values()) {
+            if (t.getTitle().toLowerCase().contains(keyword.toLowerCase())) {
+                System.out.println(t);
+                found = true;
             }
         }
-        System.out.println("Task with ID " + id + " not found.");
-    }
-
-    public void updateTask(List<Task> tasks) {
-        System.out.print("Enter Task ID to update: ");
-        int updateId = sc.nextInt();
-        sc.nextLine();
-
-        System.out.print("Enter New Title: ");
-        String newTitle = sc.nextLine();
-
-        System.out.print("Enter New Description: ");
-        String newDesc = sc.nextLine();
-
-        int newPriority;
-        while (true) {
-            System.out.print("Enter New Priority (1-5): ");
-            if (sc.hasNextInt()) {
-                newPriority = sc.nextInt();
-                sc.nextLine();
-                if (newPriority >= 1 && newPriority <= 5) break;
-                else System.out.println(" Please enter priority between 1 and 5.");
-            } else {
-                System.out.println(" Invalid input! Please enter a number.");
-                sc.nextLine();
-            }
+        if (!found) {
+            System.out.println("No tasks found with title containing: " + keyword);
         }
-
-        System.out.print("Enter New Deadline (yyyy-mm-dd): ");
-        String newDeadline = sc.nextLine();
-        for (Task t : tasks) {
-            if (t.getId() == updateId) {
-                t.setTitle(newTitle);
-                t.setDescription(newDesc);
-                t.setPriority(newPriority);
-                t.setDeadline(newDeadline);
-                System.out.println(" Task updated: " + t);
-                return;
-            }
-        }
-        System.out.println("Task with ID " + updateId + " not found for update.");
     }
 }
