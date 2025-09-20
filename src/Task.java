@@ -31,9 +31,13 @@ public class Task {
 
     @Override
     public String toString() {
-        return String.format("Task{id=%d, title='%s', desc='%s', priority=%d, deadline=%s}",
-                id, title, description, priority, deadline);
+        return "ID: " + id + "\n" +
+                "Title: " + title + "\n" +
+                "Description: " + description + "\n" +
+                "Priority: " + priority + "\n" +
+                "Deadline: " + deadline;
     }
+
 
     @Override
     public boolean equals(Object o) {

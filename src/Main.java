@@ -26,57 +26,117 @@ public class Main {
             System.out.print("Enter your choice: ");
 
             int choice = sc.nextInt();
-            sc.nextLine(); // consume newline
+            sc.nextLine();
 
             switch (choice) {
-                case 1: // Create Task
+                case 1:
                     int id = readInt(sc, "Enter ID: ");
                     String title = readTitle(sc, "Enter title: ");
                     String desc = readDescription(sc, "Enter description: ");
                     int priority = readPriority(sc, "Enter priority (1-5): ");
                     LocalDate deadline = readDate(sc, formatter, "Enter deadline (dd/MM/yyyy): ");
 
-                    Task newTask = tm.createTask(tasks, id, title, desc, priority, deadline);
-                    System.out.println("Task created: " + newTask);
+                    Task newTask = tm.createTask(tasks, id, title, desc, priority, deadline,sc);
+                    System.out.println("Task created: ");
+                    System.out.println(newTask);
+                    System.out.println("Press only Enter to continue...");
+                    String input = sc.nextLine();
+                    while (!input.isEmpty()) {
+                        System.out.println("Press only Enter to continue...");
+                        input = sc.nextLine();
+                    }
+
                     break;
 
-                case 2: // Delete Task
+                case 2:
                     int delId = readInt(sc, "Enter ID to delete: ");
-                    System.out.println(tm.deleteTask(tasks, delId) ? "Deleted!" : "Not found!");
+                    String s=tm.deleteTask(tasks,delId);
+                    System.out.println(s);
+                    System.out.println("Press only Enter to continue...");
+                    String input1 = sc.nextLine();
+                    while (!input1.isEmpty()) {
+                        System.out.println("Press only Enter to continue...");
+                        input1 = sc.nextLine();
+                    }
+
                     break;
 
-                case 3: // Update Task
+                case 3:
                     int upId = readInt(sc, "Enter ID to update: ");
-                    String newTitle = readTitle(sc, "Enter new title: ");
-                    String newDesc = readDescription(sc, "Enter new description: ");
-                    int newPriority = readPriority(sc, "Enter new priority (1-5): ");
-                    LocalDate newDeadline = readDate(sc, formatter, "Enter new deadline (dd/MM/yyyy): ");
+                    String newTitle = null;
+                    String newDesc = null;
+                    Integer newPriority = null;
+                    LocalDate newDeadline = null;
 
-                    System.out.println(tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, newDeadline)
-                            ? "Updated!" : "Not found!");
+                    System.out.print("Update title? (y/n): ");
+                    if (sc.nextLine().equalsIgnoreCase("y")) {
+                        newTitle = readTitle(sc, "Enter new title: ");
+                    }
+
+                    System.out.print("Update description? (y/n): ");
+                    if (sc.nextLine().equalsIgnoreCase("y")) {
+                        newDesc = readDescription(sc, "Enter new description: ");
+                    }
+
+                    System.out.print("Update priority? (y/n): ");
+                    if (sc.nextLine().equalsIgnoreCase("y")) {
+                        newPriority = readPriority(sc, "Enter new priority (1-5): ");
+                    }
+
+                    System.out.print("Update deadline? (y/n): ");
+                    if (sc.nextLine().equalsIgnoreCase("y")) {
+                        newDeadline = readDate(sc, formatter, "Enter new deadline (dd/MM/yyyy): ");
+                    }
+
+                    String updated = tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, newDeadline);
+                    System.out.println(updated);
+                    System.out.println("Press only Enter to continue...");
+                    String input2 = sc.nextLine();
+                    while (!input2.isEmpty()) {
+                        System.out.println("Press only Enter to continue...");
+                        input2 = sc.nextLine();
+                    }
                     break;
 
-                case 4: // Read Task
+
+                case 4:
                     int readId = readInt(sc, "Enter ID to read: ");
-                    tm.getTaskById(tasks, readId).ifPresentOrElse(
-                            System.out::println,
-                            () -> System.out.println("Task not found!")
-                    );
+                   Task t= tm.getTaskById(tasks, readId,sc);
+                    System.out.println(t);System.out.println("Press only Enter to continue...");
+                    String input3 = sc.nextLine();
+                    while (!input3.isEmpty()) {
+                        System.out.println("Press only Enter to continue...");
+                        input3 = sc.nextLine();
+                    }
                     break;
 
-                case 5: // Show all
+                case 5:
                     tm.showAll(tasks);
+
+                System.out.println("Press only Enter to continue...");
+                String input4 = sc.nextLine();
+                while (!input4.isEmpty()) {
+                    System.out.println("Press only Enter to continue...");
+                    input4 = sc.nextLine();
+
+                }
                     break;
 
-                case 6: // Exit
+                case 6:
                     running = false;
                     sc.close();
                     break;
 
-                case 7: // Search
-                    System.out.print("Enter title keyword: ");
-                    String keyword = sc.nextLine();
+                case 7:
+                    String keyword = readTitle(sc,"Enter title keyword: ");
                     tm.searchByTitle(tasks, keyword);
+                    System.out.println("Press only Enter to continue...");
+                    String input5 = sc.nextLine();
+                    while (!input5.isEmpty()) {
+                        System.out.println("Press only Enter to continue...");
+                        input5 = sc.nextLine();
+                        break;
+                    }
                     break;
 
                 default:
@@ -86,23 +146,23 @@ public class Main {
     }
 
 
-    private static int readInt(Scanner sc, String prompt) {
+    public static int readInt(Scanner sc, String prompt) {
         int value;
         while (true) {
             System.out.print(prompt);
             if (sc.hasNextInt()) {
                 value = sc.nextInt();
-                sc.nextLine(); // consume newline
+                sc.nextLine();
                 break;
             } else {
                 System.out.println("Please enter a valid integer.");
-                sc.nextLine(); // discard invalid input
+                sc.nextLine();
             }
         }
         return value;
     }
 
-    private static String readTitle(Scanner sc, String prompt) {
+    public static String readTitle(Scanner sc, String prompt) {
         String title;
         while (true) {
             System.out.print(prompt);
@@ -146,7 +206,7 @@ public class Main {
                 }
             } else {
                 System.out.println("Priority should be an integer only.");
-                sc.nextLine(); // discard invalid input
+                sc.nextLine();
             }
         }
         return priority;
@@ -159,11 +219,16 @@ public class Main {
             String input = sc.nextLine();
             try {
                 date = LocalDate.parse(input, formatter);
-                break;
+                if (date.isBefore(LocalDate.now())) {
+                    System.out.println("Deadline cannot be in the past. Enter a future date.");
+                } else {
+                    break;
+                }
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date format! Please enter again in dd/MM/yyyy format.");
             }
         }
         return date;
     }
+
 }
