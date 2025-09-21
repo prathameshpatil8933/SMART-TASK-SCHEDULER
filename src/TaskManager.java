@@ -18,28 +18,19 @@ public class TaskManager {
         Task task = new Task(id, title, description, priority, deadline);
         tasks.put(id, task);
 
-        // record action and clear redo history
-        undoStack.push(new Action(Action.ActionType.CREATE, id, null, new Task(task.getId(), task.getTitle(), task.getDescription(), task.getPriority(), task.getDeadline())));
+        // record action (store copies) and clear redo history
+        Task newCopy = new Task(task.getId(), task.getTitle(), task.getDescription(), task.getPriority(), task.getDeadline());
+        undoStack.push(new Action(Action.ActionType.CREATE, id, null, newCopy));
         redoStack.clear();
 
         System.out.println("Task created: ");
         System.out.println(task);
 
-        // immediate undo prompt (reads input repeatedly until valid)
-        while (true) {
-            System.out.print("Do you want to undo this creation? (y/n): ");
-            String line = sc.nextLine().trim();
-            if (line.isEmpty()) continue;
-            char ip = line.charAt(0);
-            if (ip == 'y' || ip == 'Y') {
-                undo(tasks);
-                break;
-            } else if (ip == 'n' || ip == 'N') {
-                System.out.println("Task kept!");
-                break;
-            } else {
-                System.out.println("Enter valid option from (y/n).");
-            }
+        // immediate undo prompt
+        if (Main.readYesNo(sc, "Do you want to undo this creation?")) {
+            undo(tasks);
+        } else {
+            System.out.println("Task kept!");
         }
 
         return task;
@@ -76,41 +67,19 @@ public class TaskManager {
         System.out.println(result);
 
         // immediate undo prompt
-        while (true) {
-            System.out.print("Do you want to undo this deletion? (y/n): ");
-            String line = sc.nextLine().trim();
-            if (line.isEmpty()) continue;
-            char undoChoice = line.charAt(0);
+        if (Main.readYesNo(sc, "Do you want to undo this deletion?")) {
+            undo(tasks);
+            System.out.println("Task deletion undone! Task restored.");
 
-            if (undoChoice == 'y' || undoChoice == 'Y') {
-                undo(tasks);
-                System.out.println("Task deletion undone! Task restored.");
-
-                // offer redo after undo
-                while (true) {
-                    System.out.print("Do you want to redo this deletion? (y/n): ");
-                    String r = sc.nextLine().trim();
-                    if (r.isEmpty()) continue;
-                    char redoChoice = r.charAt(0);
-
-                    if (redoChoice == 'y' || redoChoice == 'Y') {
-                        redo(tasks);
-                        System.out.println("Task deleted again.");
-                        break;
-                    } else if (redoChoice == 'n' || redoChoice == 'N') {
-                        System.out.println("Task kept.");
-                        break;
-                    } else {
-                        System.out.println("Invalid input! Please enter y or n.");
-                    }
-                }
-                break;
-            } else if (undoChoice == 'n' || undoChoice == 'N') {
-                System.out.println("Task permanently deleted.");
-                break;
+            // offer redo after undo
+            if (Main.readYesNo(sc, "Do you want to redo this deletion?")) {
+                redo(tasks);
+                System.out.println("Task deleted again.");
             } else {
-                System.out.println("Invalid input! Please enter y or n.");
+                System.out.println("Task kept.");
             }
+        } else {
+            System.out.println("Task permanently deleted.");
         }
 
         return result;
@@ -144,44 +113,22 @@ public class TaskManager {
         System.out.println("Task with ID " + id + " updated successfully.");
         System.out.println(t);
 
-        // Ask for immediate undo (reads input safely)
-        while (true) {
-            System.out.print("Do you want to undo this update? (y/n): ");
-            String line = sc.nextLine().trim();
-            if (line.isEmpty()) continue;
-            char undo = line.charAt(0);
+        // Ask for immediate undo
+        if (Main.readYesNo(sc, "Do you want to undo this update?")) {
+            undo(tasks);
+            System.out.println("Undo done. Task reverted:");
+            System.out.println(tasks.get(id));
 
-            if (undo == 'y' || undo == 'Y') {
-                undo(tasks);
-                System.out.println("Undo done. Task reverted:");
+            // redo prompt after undo
+            if (Main.readYesNo(sc, "Do you want to redo this update?")) {
+                redo(tasks);
+                System.out.println("Redo done. Task updated again:");
                 System.out.println(tasks.get(id));
-
-                // redo prompt after undo
-                while (true) {
-                    System.out.print("Do you want to redo this update? (y/n): ");
-                    String r = sc.nextLine().trim();
-                    if (r.isEmpty()) continue;
-                    char redo = r.charAt(0);
-
-                    if (redo == 'y' || redo == 'Y') {
-                        redo(tasks);
-                        System.out.println("Redo done. Task updated again:");
-                        System.out.println(tasks.get(id));
-                        break;
-                    } else if (redo == 'n' || redo == 'N') {
-                        System.out.println("Redo skipped. Task kept in reverted state.");
-                        break;
-                    } else {
-                        System.out.println("Please enter valid option (y/n).");
-                    }
-                }
-                break;
-            } else if (undo == 'n' || undo == 'N') {
-                System.out.println("Update kept.");
-                break;
             } else {
-                System.out.println("Please enter valid option (y/n).");
+                System.out.println("Redo skipped. Task kept in reverted state.");
             }
+        } else {
+            System.out.println("Update kept.");
         }
     }
 
@@ -208,7 +155,7 @@ public class TaskManager {
         }
     }
 
-    // Correct undo: pop from undoStack and push into redoStack
+    // Undo: pop from undoStack and push into redoStack
     public void undo(Map<Integer, Task> tasks) {
         if (undoStack.isEmpty()) {
             System.out.println("Nothing to undo.");

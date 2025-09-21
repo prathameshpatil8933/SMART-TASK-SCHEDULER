@@ -1,4 +1,3 @@
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -27,8 +26,15 @@ public class Main {
             System.out.println("9. Redo last action");
             System.out.print("Enter your choice: ");
 
-            int choice = sc.nextInt();
-            sc.nextLine();
+            int choice;
+            if (sc.hasNextInt()) {
+                choice = sc.nextInt();
+                sc.nextLine();
+            } else {
+                System.out.println("Please enter a valid number.");
+                sc.nextLine();
+                continue;
+            }
 
             switch (choice) {
                 case 1:
@@ -38,26 +44,15 @@ public class Main {
                     int priority = readPriority(sc, "Enter priority (1-5): ");
                     LocalDate deadline = readDate(sc, formatter, "Enter deadline (dd/MM/yyyy): ");
 
-                    Task newTask = tm.createTask(tasks, id, title, desc, priority, deadline,sc);
-                    System.out.println("Press only Enter to continue...");
-                    String input = sc.nextLine();
-                    while (!input.isEmpty()) {
-                        System.out.println("Press only Enter to continue...");
-                        input = sc.nextLine();
-                    }
-
+                    tm.createTask(tasks, id, title, desc, priority, deadline, sc);
+                    pause(sc);
                     break;
 
                 case 2:
                     int delId = readInt(sc, "Enter ID to delete: ");
-                    String s=tm.deleteTask(tasks,delId,sc);
+                    String s = tm.deleteTask(tasks, delId, sc);
                     System.out.println(s);
-                    System.out.println("Press only Enter to continue...");
-                    String input1 = sc.nextLine();
-                    while (!input1.isEmpty()) {
-                        System.out.println("Press only Enter to continue...");
-                        input1 = sc.nextLine();
-                    }
+                    pause(sc);
                     break;
 
                 case 3:
@@ -87,37 +82,20 @@ public class Main {
                         newDeadline = readDate(sc, formatter, "Enter new deadline (dd/MM/yyyy): ");
                     }
 
-                     tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, newDeadline,sc);
-                    System.out.println("Press only Enter to continue...");
-                    String input2 = sc.nextLine();
-                    while (!input2.isEmpty()) {
-                        System.out.println("Press only Enter to continue...");
-                        input2 = sc.nextLine();
-                    }
+                    tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, newDeadline, sc);
+                    pause(sc);
                     break;
-
 
                 case 4:
                     int readId = readInt(sc, "Enter ID to read: ");
-                   Task t= tm.getTaskById(tasks, readId,sc);
-                    System.out.println(t);System.out.println("Press only Enter to continue...");
-                    String input3 = sc.nextLine();
-                    while (!input3.isEmpty()) {
-                        System.out.println("Press only Enter to continue...");
-                        input3 = sc.nextLine();
-                    }
+                    Task t = tm.getTaskById(tasks, readId, sc);
+                    System.out.println(t);
+                    pause(sc);
                     break;
 
                 case 5:
                     tm.showAll(tasks);
-
-                System.out.println("Press only Enter to continue...");
-                String input4 = sc.nextLine();
-                while (!input4.isEmpty()) {
-                    System.out.println("Press only Enter to continue...");
-                    input4 = sc.nextLine();
-
-                }
+                    pause(sc);
                     break;
 
                 case 6:
@@ -126,26 +104,19 @@ public class Main {
                     break;
 
                 case 7:
-                    String keyword = readTitle(sc,"Enter title keyword: ");
+                    String keyword = readTitle(sc, "Enter title keyword: ");
                     tm.searchByTitle(tasks, keyword);
-                    System.out.println("Press only Enter to continue...");
-                    String input5 = sc.nextLine();
-                    while (!input5.isEmpty()) {
-                        System.out.println("Press only Enter to continue...");
-                        input5 = sc.nextLine();
-                        break;
-                    }
+                    pause(sc);
                     break;
+
                 case 8:
                     tm.undo(tasks);
-                    System.out.println("Press only Enter to continue...");
-                    sc.nextLine();
+                    pause(sc);
                     break;
 
                 case 9:
                     tm.redo(tasks);
-                    System.out.println("Press only Enter to continue...");
-                    sc.nextLine();
+                    pause(sc);
                     break;
 
                 default:
@@ -154,6 +125,15 @@ public class Main {
         }
     }
 
+    // helper that asks user to press enter to continue
+    private static void pause(Scanner sc) {
+        System.out.println("Press only Enter to continue...");
+        String input = sc.nextLine();
+        while (!input.isEmpty()) {
+            System.out.println("Press only Enter to continue...");
+            input = sc.nextLine();
+        }
+    }
 
     public static int readInt(Scanner sc, String prompt) {
         int value;
@@ -240,4 +220,16 @@ public class Main {
         return date;
     }
 
+
+    public static boolean readYesNo(Scanner sc, String prompt) {
+        while (true) {
+            System.out.print(prompt + " (y/n): ");
+            String line = sc.nextLine().trim();
+            if (line.isEmpty()) continue;
+            char ch = Character.toLowerCase(line.charAt(0));
+            if (ch == 'y') return true;
+            if (ch == 'n') return false;
+            System.out.println("Please enter y or n.");
+        }
+    }
 }
