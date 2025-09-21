@@ -23,6 +23,8 @@ public class Main {
             System.out.println("5. Show All Tasks");
             System.out.println("6. Exit");
             System.out.println("7. Search by Title");
+            System.out.println("8. Undo last action");
+            System.out.println("9. Redo last action");
             System.out.print("Enter your choice: ");
 
             int choice = sc.nextInt();
@@ -56,11 +58,6 @@ public class Main {
                         System.out.println("Press only Enter to continue...");
                         input1 = sc.nextLine();
                     }
-
-
-
-
-
                     break;
 
                 case 3:
@@ -138,6 +135,17 @@ public class Main {
                         input5 = sc.nextLine();
                         break;
                     }
+                    break;
+                case 8:
+                    tm.undo(tasks);
+                    System.out.println("Press only Enter to continue...");
+                    sc.nextLine();
+                    break;
+
+                case 9:
+                    tm.redo(tasks);
+                    System.out.println("Press only Enter to continue...");
+                    sc.nextLine();
                     break;
 
                 default:
