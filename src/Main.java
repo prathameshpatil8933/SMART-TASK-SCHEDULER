@@ -193,7 +193,7 @@ public class Main {
         return time;
     }
 
-    // helper that asks user to press enter to continue
+    // helper that asks user to press enter to
     private static void pause(Scanner sc) {
         System.out.println("Press only Enter to continue...");
         String input = sc.nextLine();
