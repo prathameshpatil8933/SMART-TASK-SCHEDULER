@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class Task {
@@ -7,13 +8,15 @@ public class Task {
     private String description;
     private int priority; // 1–5
     private LocalDate deadline;
+    private LocalTime time;
 
-    public Task(int id, String title, String description, int priority, LocalDate deadline) {
+    public Task(int id, String title, String description, int priority, LocalDate deadline,LocalTime time) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.priority = priority;
         this.deadline = deadline;
+        this.time=time;
     }
 
     // Getters
@@ -22,12 +25,13 @@ public class Task {
     public String getDescription() { return description; }
     public int getPriority() { return priority; }
     public LocalDate getDeadline() { return deadline; }
-
+    public LocalTime getTime() {return time;}
     // Setters
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
     public void setPriority(int priority) { this.priority = priority; }
     public void setDeadline(LocalDate deadline) { this.deadline = deadline; }
+    public void setTime(LocalTime time) {this.time = time;}
 
     @Override
     public String toString() {

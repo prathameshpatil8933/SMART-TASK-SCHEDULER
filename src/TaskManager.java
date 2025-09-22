@@ -1,11 +1,12 @@
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 public class TaskManager {
     private Stack<Action> undoStack = new Stack<>();
     private Stack<Action> redoStack = new Stack<>();
 
-    public Task createTask(Map<Integer, Task> tasks, int id, String title, String description, int priority, LocalDate deadline, Scanner sc) {
+    public void createTask(Map<Integer, Task> tasks, int id, String title, String description, int priority, LocalDate deadline, LocalTime time, Scanner sc) {
         while(true) {
             if (tasks.containsKey(id)) {
                 System.out.println("Task ID already exists: " + id);
@@ -15,25 +16,22 @@ public class TaskManager {
             }
         }
 
-        Task task = new Task(id, title, description, priority, deadline);
+        Task task = new Task(id, title, description, priority, deadline,time);
         tasks.put(id, task);
 
-        // record action (store copies) and clear redo history
-        Task newCopy = new Task(task.getId(), task.getTitle(), task.getDescription(), task.getPriority(), task.getDeadline());
+        Task newCopy = new Task(task.getId(), task.getTitle(), task.getDescription(), task.getPriority(), task.getDeadline(),task.getTime());
         undoStack.push(new Action(Action.ActionType.CREATE, id, null, newCopy));
         redoStack.clear();
 
         System.out.println("Task created: ");
         System.out.println(task);
 
-        // immediate undo prompt
         if (Main.readYesNo(sc, "Do you want to undo this creation?")) {
             undo(tasks);
         } else {
             System.out.println("Task kept!");
         }
 
-        return task;
     }
 
     public Task getTaskById(Map<Integer, Task> tasks, int id, Scanner sc) {
@@ -59,19 +57,17 @@ public class TaskManager {
         }
 
         // record action and clear redo
-        Task oldCopy = new Task(removed.getId(), removed.getTitle(), removed.getDescription(), removed.getPriority(), removed.getDeadline());
+        Task oldCopy = new Task(removed.getId(), removed.getTitle(), removed.getDescription(), removed.getPriority(), removed.getDeadline(),removed.getTime());
         undoStack.push(new Action(Action.ActionType.DELETE, id, oldCopy, null));
         redoStack.clear();
 
         result = "Task with ID=" + id + " removed.";
         System.out.println(result);
 
-        // immediate undo prompt
         if (Main.readYesNo(sc, "Do you want to undo this deletion?")) {
             undo(tasks);
             System.out.println("Task deletion undone! Task restored.");
 
-            // offer redo after undo
             if (Main.readYesNo(sc, "Do you want to redo this deletion?")) {
                 redo(tasks);
                 System.out.println("Task deleted again.");
@@ -88,7 +84,7 @@ public class TaskManager {
     public void updateTask(Map<Integer, Task> tasks, int id,
                            String newTitle, String newDescription,
                            Integer newPriority, LocalDate newDeadline,
-                           Scanner sc) {
+                           LocalTime newTime, Scanner sc) {
 
         Task t = tasks.get(id);
         if (t == null) {
@@ -96,30 +92,26 @@ public class TaskManager {
             return;
         }
 
-        // old snapshot and apply new values
-        Task oldCopy = new Task(t.getId(), t.getTitle(), t.getDescription(), t.getPriority(), t.getDeadline());
+        Task oldCopy = new Task(t.getId(), t.getTitle(), t.getDescription(), t.getPriority(), t.getDeadline(),t.getTime());
 
         if (newTitle != null) t.setTitle(newTitle);
         if (newDescription != null) t.setDescription(newDescription);
         if (newPriority != null) t.setPriority(newPriority);
         if (newDeadline != null) t.setDeadline(newDeadline);
 
-        Task newCopy = new Task(t.getId(), t.getTitle(), t.getDescription(), t.getPriority(), t.getDeadline());
+        Task newCopy = new Task(t.getId(), t.getTitle(), t.getDescription(), t.getPriority(), t.getDeadline(),t.getTime());
 
-        // push action & clear redo
         undoStack.push(new Action(Action.ActionType.UPDATE, id, oldCopy, newCopy));
         redoStack.clear();
 
         System.out.println("Task with ID " + id + " updated successfully.");
         System.out.println(t);
 
-        // Ask for immediate undo
         if (Main.readYesNo(sc, "Do you want to undo this update?")) {
             undo(tasks);
             System.out.println("Undo done. Task reverted:");
             System.out.println(tasks.get(id));
 
-            // redo prompt after undo
             if (Main.readYesNo(sc, "Do you want to redo this update?")) {
                 redo(tasks);
                 System.out.println("Redo done. Task updated again:");
@@ -180,7 +172,6 @@ public class TaskManager {
         }
     }
 
-    // Redo pops from redoStack and pushes into undoStack (keeps history)
     public void redo(Map<Integer, Task> tasks) {
         if (redoStack.isEmpty()) {
             System.out.println("Nothing to redo.");

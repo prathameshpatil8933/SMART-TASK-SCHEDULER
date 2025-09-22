@@ -1,9 +1,8 @@
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,7 +10,7 @@ public class Main {
         TaskManager tm = new TaskManager();
         Map<Integer, Task> tasks = new HashMap<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
+        DateTimeFormatter formatters=DateTimeFormatter.ofPattern("HH:mm");
         boolean running = true;
         while (running) {
             System.out.println("\n==== Task Manager ====");
@@ -24,6 +23,7 @@ public class Main {
             System.out.println("7. Search by Title");
             System.out.println("8. Undo last action");
             System.out.println("9. Redo last action");
+            System.out.println("10.Show tasks sorted by priority or by deadline ");
             System.out.print("Enter your choice: ");
 
             int choice;
@@ -43,8 +43,9 @@ public class Main {
                     String desc = readDescription(sc, "Enter description: ");
                     int priority = readPriority(sc, "Enter priority (1-5): ");
                     LocalDate deadline = readDate(sc, formatter, "Enter deadline (dd/MM/yyyy): ");
+                    LocalTime time = readTime(sc, formatters, "Enter time (HH:mm): ");
 
-                    tm.createTask(tasks, id, title, desc, priority, deadline, sc);
+                    tm.createTask(tasks, id, title, desc, priority, deadline, time,sc);
                     pause(sc);
                     break;
 
@@ -61,6 +62,7 @@ public class Main {
                     String newDesc = null;
                     Integer newPriority = null;
                     LocalDate newDeadline = null;
+                    LocalTime newTime=null;
 
                     System.out.print("Update title? (y/n): ");
                     if (sc.nextLine().equalsIgnoreCase("y")) {
@@ -81,8 +83,12 @@ public class Main {
                     if (sc.nextLine().equalsIgnoreCase("y")) {
                         newDeadline = readDate(sc, formatter, "Enter new deadline (dd/MM/yyyy): ");
                     }
+                    System.out.print("Update time? (y/n): ");
+                    if (sc.nextLine().equalsIgnoreCase("y")) {
+                        newTime = readTime(sc, formatters, "Enter new time (HH:mm): ");
+                    }
 
-                    tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, newDeadline, sc);
+                    tm.updateTask(tasks, upId, newTitle, newDesc, newPriority, newDeadline, newTime,sc);
                     pause(sc);
                     break;
 
@@ -118,11 +124,73 @@ public class Main {
                     tm.redo(tasks);
                     pause(sc);
                     break;
+                case 10:
+                    if (tasks.isEmpty()) {
+                        System.out.println("No tasks to sort.");
+                        pause(sc);
+                        break;
+                    }
+
+                    System.out.println("Sort tasks by:");
+                    System.out.println("1. Priority");
+                    System.out.println("2. Deadline");
+                    System.out.print("Enter your choice: ");
+                    int sortChoice;
+                    if (sc.hasNextInt()) {
+                        sortChoice = sc.nextInt();
+                        sc.nextLine(); // consume newline
+                    } else {
+                        System.out.println("Invalid input! Defaulting to priority.");
+                        sc.nextLine();
+                        sortChoice = 1;
+                    }
+
+                    List<Task> taskList = new ArrayList<>(tasks.values());
+
+                    switch (sortChoice) {
+                        case 1:
+                            taskList.sort(Comparator.comparingInt(Task::getPriority));
+                            System.out.println("Tasks sorted by Priority:");
+                            break;
+                        case 2:
+                            taskList.sort(Comparator.comparing(Task::getDeadline));
+                            System.out.println("Tasks sorted by Deadline:");
+                            break;
+                        default:
+                            System.out.println("Invalid choice! Sorting by Priority by default.");
+                            taskList.sort(Comparator.comparingInt(Task::getPriority));
+                            break;
+                    }
+
+                    taskList.forEach(System.out::println);
+                    pause(sc);
+                    break;
+
+
 
                 default:
                     System.out.println("Invalid choice!");
             }
         }
+    }
+
+    private static LocalTime readTime(Scanner sc, DateTimeFormatter formatters, String prompt) {
+        LocalTime time;
+        while (true) {
+            System.out.print(prompt);
+            String input = sc.nextLine();
+            try {
+                time = LocalTime.parse(input, formatters);
+                if (time.isBefore(LocalTime.now())) {
+                    System.out.println("Time  cannot be in the past. Enter a future time.");
+                } else {
+                    break;
+                }
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid time format! Please enter again in HH:mm format.");
+            }
+        }
+        return time;
     }
 
     // helper that asks user to press enter to continue
